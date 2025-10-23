@@ -1,67 +1,54 @@
 import flask
 from flask_cors import CORS
-import math
+from math import sqrt
 from flask import jsonify, request
 
 app = flask.Flask(__name__)
 CORS(app)
 
 def calculate(a, b, c) -> dict:
-    if a == b == c == 0:
-        return {
-            'x1': 0,
-            'delta': 0,
-            'n_results': 0,
-            'complex': False
-        }
-    
-    delta = b * b - (4 * a * c)
-    is_complex = False
-        
+    output = 'Equation solution:\n\nax^2 + bx + c = 0\n\n---\n\n'
+
     if a == 0:
-        x1 = -c / b
-
-        return {
-            'x1': x1,
-            'delta': delta,
-            'n_results': 1,
-            'complex': is_complex
-        }
-
-    if delta < 0:
-        real = -b / (2 * a)
-        im = math.sqrt(-delta) / (2 * a)
-        is_complex = True
-
-        return {
-            'real': real,
-            'imaginary': im,
-            'delta': delta,
-            'n_results': 2,
-            'complex': is_complex
-        }
+        output += 'bx + c = 0\n\n'
+        output += f'{b}x + {c} = 0\n\n'
+        output += f'{b}x = {-c}\n\n'
+        output += f'x = {-c}/{b}\n\n'
+        output += f'x = {-c/b}\n\n'
+        
+        print(output)
+        return {'text': output}
     
-    elif delta == 0:
-        x1 = -b / (2 * a)
-
-        return {
-            'x1': x1,
-            'delta': delta,
-            'n_results': 1,
-            'complex': is_complex
-        }
-
-    sqrt_delta = math.sqrt(delta)
-    x1 = (-b + sqrt_delta) / (2 * a)
-    x2 = (-b - sqrt_delta) / (2 * a)
+    output += 'x = (-b +- sqrt( b^2 - 4 * a * c )) / (2 * a)\n\n'
+    output += f'x = (-{b} +- sqrt( {b}^2 - 4 * {a} * {c} )) / (2 * {a})\n\n'
     
-    return {
-        'x1': x1,
-        'x2': x2,
-        'delta': delta,
-        'n_results': 2,
-        'complex': is_complex
-    }
+    minus_b = -b
+    b_sqr = b*b
+    two_a = 2 * a
+    output += f'x = ({minus_b} +- sqrt( {b_sqr} - ({4 * a * c}) )) / ({two_a})\n\n'
+    
+    delta = b_sqr - (4 * a * c)
+    output += f'x = ({minus_b} +- sqrt( {delta} )) / ({two_a})\n\n'
+
+    if delta >= 0:
+
+        output += f'x = {minus_b / two_a} +- {sqrt(delta) / two_a}\n\n'
+        output += f'x1 = {minus_b / two_a} + {sqrt(delta) / two_a}\n\n'
+        output += f'x1 = {minus_b / two_a + sqrt(delta) / two_a}\n\n'
+        output += f'x2 = {minus_b / two_a} - {sqrt(delta) / two_a}\n\n'
+        output += f'x2 = {minus_b / two_a - sqrt(delta) / two_a}\n\n'
+        
+    else:
+        
+        output += f'x = ({minus_b} +- sqrt( {-delta} * -1 )) / ({two_a})\n\n'
+        output += f'x = ({minus_b} +- sqrt({-delta}) * i) / ({two_a})\n\n'
+        output += f'x = {minus_b / two_a} +- {sqrt(-delta) / two_a} * i\n\n'
+        output += f'x1 = {minus_b / two_a} + {sqrt(-delta) / two_a} * i\n\n'
+        output += f'x2 = {minus_b / two_a} - {sqrt(-delta) / two_a} * i\n\n'
+
+    print(output)
+    return {'text': output}
+
 
 def valid_and_calc(a, b, c):
     coefs = ['a', 'b', 'c']
