@@ -13,35 +13,71 @@ def calculate(a, b, c) -> dict:
         output += 'bx + c = 0\n\n'
         output += f'{b}x + {c} = 0\n\n'
         output += f'{b}x = {-c}\n\n'
-        output += f'x = {-c}/{b}\n\n'
-        output += f'x = {-c/b}\n\n'
+        minus_c = 0.0 if c == 0.0 else -c
+        output += f'x = {minus_c}/{b}\n\n'
+        output += f'x = {minus_c/b}\n\n'
         
         print(output)
         return {'text': output}
     
-    output += 'x = (-b +- sqrt( b^2 - 4 * a * c )) / (2 * a)\n\n'
-    output += f'x = (-{b} +- sqrt( {b}^2 - 4 * {a} * {c} )) / (2 * {a})\n\n'
+    if b == 0:
+        output += 'ax² + c = 0\n\n'
+        output += f'{a}x² + {c} = 0\n\n'
+        output += f'{a}x² = -({c})\n\n'
+        output += f'x² = {-c}/{a}\n\n'
+        
+        res = -c/a
+        output += f'x = √({res})\n\n\n'
+
+        if res < 0:
+            sqrt_res = sqrt(-res)
+            output += f'x₁ = {sqrt_res} * i\n\n\n'
+            output += f'x₂ = {-sqrt_res} * i\n\n'
+        
+        else:
+            sqrt_res = sqrt(res)
+            output += f'x₁ = {sqrt_res}\n\n\n'
+            output += f'x₂ = {-sqrt_res}\n\n'
+
+        print(output)
+        return {'text': output}
+
+    if c == 0:
+        output += 'ax² + bx = 0\n\n'
+        output += '(ax + b)x = 0\n\n\n'
+        output += 'x₁ = 0\n\n\n'
+        output += 'ax₂ + b = 0\n\n'
+        output += f'{a}x₂ + {b} = 0\n\n'
+        output += f'{a}x₂ = -({b})\n\n'
+        output += f'x₂ = {-b}/{a}\n\n'
+        output += f'x₂ = {-b/a}\n\n'
+
+        print(output)
+        return {'text': output}
+    
+    output += 'x = (-b ± √( b² - 4ac )) / (2a)\n\n'
+    output += f'x = (-{b} ± √( {b}² - 4 × {a} × {c} )) / (2 × {a})\n\n'
     
     minus_b = -b
     b_sqr = b*b
     two_a = 2 * a
-    output += f'x = ({minus_b} +- sqrt( {b_sqr} - ({4 * a * c}) )) / ({two_a})\n\n'
+    output += f'x = ({minus_b} ± √( {b_sqr} - ({4 * a * c}) )) / {two_a}\n\n'
     
     delta = b_sqr - (4 * a * c)
-    output += f'x = ({minus_b} +- sqrt( {delta} )) / ({two_a})\n\n'
+    output += f'x = ({minus_b} ± √( {delta} )) / {two_a}\n\n'
 
     if delta >= 0:
 
-        output += f'x = {minus_b / two_a} +- {sqrt(delta) / two_a}\n\n'
-        output += f'x1 = {minus_b / two_a} + {sqrt(delta) / two_a}\n\n'
-        output += f'x1 = {minus_b / two_a + sqrt(delta) / two_a}\n\n'
-        output += f'x2 = {minus_b / two_a} - {sqrt(delta) / two_a}\n\n'
-        output += f'x2 = {minus_b / two_a - sqrt(delta) / two_a}\n\n'
+        output += f'x = {minus_b / two_a} ± {sqrt(delta) / two_a}\n\n\n'
+        output += f'x₁ = {minus_b / two_a} + {sqrt(delta) / two_a}\n\n'
+        output += f'x₁ = {minus_b / two_a + sqrt(delta) / two_a}\n\n\n'
+        output += f'x₂ = {minus_b / two_a} - {sqrt(delta) / two_a}\n\n'
+        output += f'x₂ = {minus_b / two_a - sqrt(delta) / two_a}\n\n'
         
     else:
         
-        output += f'x = ({minus_b} +- sqrt( {-delta} * -1 )) / ({two_a})\n\n'
-        output += f'x = ({minus_b} +- sqrt({-delta}) * i) / ({two_a})\n\n'
+        output += f'x = ({minus_b} +- √( {-delta} * -1 )) / ({two_a})\n\n'
+        output += f'x = ({minus_b} +- √({-delta}) * i) / ({two_a})\n\n'
         output += f'x = {minus_b / two_a} +- {sqrt(-delta) / two_a} * i\n\n'
         output += f'x1 = {minus_b / two_a} + {sqrt(-delta) / two_a} * i\n\n'
         output += f'x2 = {minus_b / two_a} - {sqrt(-delta) / two_a} * i\n\n'
@@ -58,7 +94,7 @@ def valid_and_calc(a, b, c):
             print(x)
             return (
                 jsonify({
-                    'error': f'Missing required field: {coefs[i]} = {x}'
+                    'text': f'Missing required field: {coefs[i]} = {x}'
                 }),
                 400
             )
@@ -68,7 +104,7 @@ def valid_and_calc(a, b, c):
         except:
             return (
                 jsonify({
-                    'error': f'Not a number: {coefs[i]} = {x}'
+                    'text': f'Not a number: {coefs[i]} = {x}'
                 }),
                 400
             )
@@ -80,7 +116,7 @@ def valid_and_calc(a, b, c):
     if a == b == 0 and not c == 0:
         return (
             jsonify({
-                'error': f'Absurd: {c} = 0'
+                'text': f'Absurd: {c} = 0'
             }),
             400
         )
