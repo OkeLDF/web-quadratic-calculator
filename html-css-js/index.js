@@ -10,7 +10,7 @@ const x1 = document.getElementById('x1')
 const x2 = document.getElementById('x2')
 
 btnCalc.addEventListener('click', () => {
-    fetch('https://okeldf.pythonanywhere.com/', {
+    fetch('https://localhost:5000', {
         method: 'POST',
         body: JSON.stringify({
             a: aInput.value,
